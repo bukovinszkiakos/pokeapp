@@ -1,0 +1,380 @@
+body {
+  font-family: "DotGothic16", sans-serif;
+  margin:0
+}
+button {
+  font-family: "DotGothic16", sans-serif;
+}
+ul {
+  padding: 0;
+}
+li {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+/*****************MENU**********************/
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: "DotGothic16", sans-serif;
+}
+
+/*******BACKGROUND******/
+.background-container {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+.background {
+  position: absolute;
+ height: 120%;
+}
+.logo {
+  position: absolute;
+  bottom:65vh;
+  width:30vw
+}
+
+/*****DESCRIPTION******/
+.description-container {
+  box-shadow: 5px 5px 5px black;
+  display: flex;
+  position: absolute;
+  top:55.4vh;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: 25vh;
+  width: 40vw;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+  border-bottom: 2px solid black;
+  border-right: 2px solid black;
+  border-left: 2px solid black
+}
+
+.description {
+  width: 100%;
+  text-align: center;
+  font-size: 2.5vh
+}
+
+
+/******CHOOSE******/
+.all-choosable-container {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  justify-content: space-evenly;
+  top: 30vh;
+  width: 90vw;
+  height: 25vh;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 70px;
+  border: 2px solid black;
+  box-shadow: 5px 5px 5px black;
+}
+
+.profile-pic {
+  width: 10vw;
+  transition: transform 0.3s;
+  cursor: pointer;
+}
+
+.profile-pic:hover {
+  transform: scale(1.2);
+}
+
+.pokemon-name {
+  position: relative;
+  bottom:4vh;
+  text-align: center;
+}
+
+
+/*****START******/
+.start-container {
+  position: absolute;
+  top: 82.5vh ;
+  height: 5vh;
+  width: 35vw;
+
+}
+.start-button {
+  font-weight: 900;
+  font-size: 7vh;
+  width: 100%;
+  height: 100%;
+  background: none;
+  border: none;
+  letter-spacing: 1vw;
+  animation: pulsate 2s infinite;
+}
+
+@keyframes pulsate {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+
+
+/*********************MAIN**********************/
+.main-background-container {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  opacity: 0.6;
+
+}
+.main-background {
+  position: absolute;
+  bottom:0%;
+ height: 120%;
+}
+.main-logo {
+  position: absolute;
+  bottom: 5vh;
+  left: 3vw;
+  width:10vw
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+}
+.panel-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.nar-container {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  top:85vh;
+  height: 10vh;
+  width: 70vw;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
+  border: 2px solid black;
+  box-shadow: 5px 5px 5px black;
+}
+
+
+/********PLAYER-POKE********/
+.player-poke-container {
+  display: flex;
+  position: absolute;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.7);
+  left: 5vw;
+  top:8vh;
+  width: 12vw;
+  height: 70vh;
+  overflow: auto;
+  border-radius: 10px;
+  border: 2px solid black;
+  box-shadow: 5px 5px 5px black;
+
+}
+
+.player-poke-list {
+  margin-top: 5vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+width: 100%;
+}
+.player-poke-wraper {
+  height: 12;
+  margin: 1vh;
+}
+
+.player-poke-name {
+  text-align: center;
+  position: absolute;
+  display: inline;
+  z-index: 2;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.player-poke-img {
+  position: relative;
+  bottom:5vh;
+  z-index: 1;
+  transition: transform 0.3s;
+  cursor: pointer;
+}
+.player-poke-img:hover {
+  transform: scale(1.2);
+}
+
+/*******LOCATIONS*******/
+.location-container {
+  display: flex;
+  position: absolute;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.7);
+  right: 5vw;
+  top:8vh;
+  width: 12vw;
+  height: 70vh;
+  overflow: auto;
+  border-radius: 10px;
+  border: 2px solid black;
+  box-shadow: 5px 5px 5px black;
+
+}
+.locations {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80%;
+  overflow: auto;
+}
+.location {
+  width: 100%;
+}
+.location-button {
+  margin-top: 1vh;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  text-transform: capitalize;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.location-button:hover {
+  background-color: #f7c99da2;
+}
+.location-button:active {
+  transform: scale(0.9);
+}
+
+/**********BATTLE********/
+.battle-container {
+  box-shadow: 5px 5px 5px black;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  position: absolute;
+  height: 75vh;
+  width: 55vw;
+  background-color: rgba(255, 255, 255, 0.8);
+  left: 50%;
+  top: 5vh;
+  transform: translateX(-50%);
+  border-radius: 50px;
+  border: 2px solid black;
+  box-shadow: 5px 5px 5px black;
+
+}
+
+/*********PLAYER********/
+.current-player-poke-container {
+  position: absolute;
+  bottom: 5vh;
+  left: 5vw;
+  height: 20vh;
+  width: 20vw;
+}
+.current-player-poke-img, .enemy-poke-img {
+  position: absolute;
+  width: 16vw;
+  right: 6vw;
+  bottom: 0;
+}
+.current-player-poke-img {
+  -webkit-transform: scaleX(-1);
+
+}
+.hp, .enemy-hp {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  bottom: 10vh;
+  left: 1vw;
+  border: 3px solid black;
+  width: 10vw;
+  height: 1.5vh;
+}
+.hp-percent, .enemy-hp-percent {
+  position: absolute;
+  bottom: 2vh;
+  z-index: 2;
+  width: 10vw;
+  text-align: center;
+  font-weight: 800;
+  font-size: 1.5vh;
+}
+.hp-left, .enemy-hp-left {
+  width: 80%;
+  background-color: greenyellow;
+  height: 1.5vh;
+}
+.hp-damage, .enemy-hp-damage {
+  width: 20%;
+  background-color: red;
+  height: 1.5vh;
+}
+
+
+/*******ENEMY********/
+.enemy-poke-container {
+  position: absolute;
+  top: 15vh;
+  right: 0vw;
+  height: 20vh;
+  width: 20vw;
+}
+
+/*******BUTTONS********/
+.button-container {
+  display: flex;
+  position: absolute;
+  bottom: 5vw;
+  right: 5vw;
+  height: 20vh;
+  width: 15vw;
+}
+.attack-button {
+
+  width: 8vw;
+  height: 4vh;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 2vh;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.attack-button:hover {
+  background-color: #f7c99da2;
+}
+.attack-button:active {
+  transform: scale(0.9);
+}
