@@ -8,7 +8,7 @@ function App() {
 
   const [isMenu, setIsMenu] = useState(true)
   const [playerPokemons, setPlayerPokemons] = useState([])
-
+  
 
   /*
 isMenu 
@@ -35,7 +35,11 @@ isBattleWon -> useEffect(flase -> ujraválaszttani (isPlayerChoosen) true-> loca
           playerPokemons={playerPokemons}
           setPlayerPokemons={setPlayerPokemons} />
       ) : (
-        <Main />
+        <Main
+          setIsMenu={setIsMenu}
+          playerPokemons={playerPokemons}
+          setPlayerPokemons={setPlayerPokemons}
+        />
 
       )}
     </>

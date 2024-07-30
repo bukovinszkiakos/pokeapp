@@ -43,7 +43,8 @@ function ChooseStarter({ playerPokemons, setPlayerPokemons }) {
                     attack: p.stats[1].base_stat,
                     defense: p.stats[2].base_stat,
                     special: p.stats[3].base_stat,
-                    choosen: false
+                    choosen: false,
+                    dead: false
                 }
                 starterPokemonsData.push(pokeData)
             })
