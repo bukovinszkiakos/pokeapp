@@ -7,6 +7,8 @@ import Main from './components/Main';
 function App() {
 
   const [isMenu, setIsMenu] = useState(true)
+  const [playerPokemons, setPlayerPokemons] = useState([])
+
 
   /*
 isMenu 
@@ -28,7 +30,10 @@ isBattleWon -> useEffect(flase -> ujraválaszttani (isPlayerChoosen) true-> loca
   return (
     <>
       {isMenu ? (
-        <Menu setIsMenu={setIsMenu} />
+        <Menu
+          setIsMenu={setIsMenu}
+          playerPokemons={playerPokemons}
+          setPlayerPokemons={setPlayerPokemons} />
       ) : (
         <Main />
 

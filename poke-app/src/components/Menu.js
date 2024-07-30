@@ -1,7 +1,6 @@
 import ChooseStarter from "./ChooseStarter"
 
-function Menu({ setIsMenu }) {
-
+function Menu({ setIsMenu, playerPokemons, setPlayerPokemons }) {
 
     return (
         <div className="menu">
@@ -18,9 +17,9 @@ function Menu({ setIsMenu }) {
                 </ul>
             </div>
             <div className='start-container'>
-                <button onClick={() => setIsMenu(false)} className="start-button" type='button'>Start Game!</button>
+                <button onClick={() => setIsMenu(false)} className="start-button" type='button'>{playerPokemons.length === 3 ? "Start Game!" : "" }</button>
             </div>
-            <ChooseStarter />
+            <ChooseStarter playerPokemons={playerPokemons} setPlayerPokemons={setPlayerPokemons} />
         </div>
     )
 }
