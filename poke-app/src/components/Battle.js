@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import Locations from './Locations'
+import Abilitymodal from './Abilitymodal'
+import Combatmodal from './Combatmodal'
 
-function Battle({ isGameWon, setIsGameWon, locations, setLocations, setIsMenu, isBattle, setIsBattle, isPlayerChoosen, setIsPlayerChoosen, nar, setNar, choosenPokemon, setChoosenPokemon, activePanel, setActivePanel, playerPokemons, setPlayerPokemons }) {
+function Battle({ setCombatLog,combatLog,isCombatModalOpen, setIsCombatModalOpen, boostDuration, setBoostDuration, isMendDisabled, setIsMendDisabled, mendCd, setMendCd, defenseDuration, setDefenseDuration, capitalize, currentLocation, isSpecialDisabled, setIsSpecialDisabled, specialCd, setSpecialCd, isGameWon, setIsGameWon, locations, setLocations, setIsMenu, isBattle, setIsBattle, isPlayerChoosen, setIsPlayerChoosen, nar, setNar, choosenPokemon, setChoosenPokemon, activePanel, setActivePanel, playerPokemons, setPlayerPokemons }) {
     const [enemy, setEnemy] = useState()
     const [enemyDmg, setEnemyDmg] = useState(0)
     const [enemyCurHp, setEnemyCurHp] = useState(0)
@@ -10,8 +11,25 @@ function Battle({ isGameWon, setIsGameWon, locations, setLocations, setIsMenu, i
     const [isAttackDisabled, setIsAttackDisabled] = useState(false)
     const [isPlayerTurn, setIsPlayerTurn] = useState(true)
     const [isGameOver, setIsGameOver] = useState(false)
-    //  const [defendModif, setDefendModif] = useState(0)
+    const [defendModif, setDefendModif] = useState(0)
+    const [boostModif, setBoostModif] = useState(0)
+    const [hpPotAmount, setHpPotAmount] = useState(0)
+    const [boostPotAmount, setBoostPotAmount] = useState(0)
+    const [isAbilityModalOpen, setIsAbilityModalOpen] = useState(false)
+    const [isEnemyDead, setIsEnemyDead]  = useState(false)
 
+    //https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/39da6277-d7e8-4885-9cd8-12328bbe53a9/dgccfm6-057d4613-192f-4d6e-b119-ea31935fa93c.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzM5ZGE2Mjc3LWQ3ZTgtNDg4NS05Y2Q4LTEyMzI4YmJlNTNhOVwvZGdjY2ZtNi0wNTdkNDYxMy0xOTJmLTRkNmUtYjExOS1lYTMxOTM1ZmE5M2MucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.tchOcaqXaVdR77UiQC9kcSd2TGH5ccvh35LfLFNnmzw
+
+
+    const updateCombatLog = (poke, logText) => {
+        let updatedCombatLog = [...combatLog]
+        const log = {
+            pokemon: poke,
+            text: logText
+        }
+        updatedCombatLog.push(log)
+        setCombatLog(updatedCombatLog)
+    }
 
     useEffect(() => {
         if (choosenPokemon) {
@@ -59,7 +77,16 @@ function Battle({ isGameWon, setIsGameWon, locations, setLocations, setIsMenu, i
 
     useEffect(() => {
         if (enemy && !isPlayerTurn) {
-            const updatedCurHp = enemyCurHp - enemyDmg
+
+            let enemyCalculatedDmg = enemyDmg
+            let updatedBoostDuration
+            if (boostDuration > 0) {
+                enemyCalculatedDmg = enemyCalculatedDmg * boostModif
+                updatedBoostDuration = boostDuration - 1
+            }
+
+
+            const updatedCurHp = enemyCurHp - enemyCalculatedDmg
 
             if (updatedCurHp <= 0) {
                 if (locations.filter(l => l.visited).length === locations.length) {
@@ -76,8 +103,11 @@ function Battle({ isGameWon, setIsGameWon, locations, setLocations, setIsMenu, i
             const { hp, attack, special } = enemy
 
             let defense = choosenPokemon.defense
-            // if (defendModif) defense += defendModif
-
+            let updatedDuration
+            if (defenseDuration > 0) {
+                defense += defendModif
+                updatedDuration = defenseDuration - 1
+            }
 
             const Z = 217 + Math.floor(Math.random() * 38)
             let dmg = 0
@@ -97,11 +127,43 @@ function Battle({ isGameWon, setIsGameWon, locations, setLocations, setIsMenu, i
                 nar = `Normal hit ${dmg} dmg`
             }
 
-
             setEnemyCurHp(updatedCurHp)
 
+            let updatedBoostPotAmount = boostPotAmount
+            let updatedHpPotAmount = hpPotAmount
             if (updatedCurHp <= 0) {
                 nar = `${enemy.name} has been defeated`
+
+                setIsEnemyDead(true)
+
+                const hpDropChance = Math.floor(Math.random() * 100)
+                const boostDropChance = Math.floor(Math.random() * 100)
+
+                if (hpDropChance < 30) {
+                    updatedHpPotAmount++
+                    nar += " You gained 1 Health Potion!"
+                }
+                if (boostDropChance < 100) {
+                    updatedBoostPotAmount++
+                    nar += " You gained 1 Boost Potion!"
+                }
+
+            }
+
+
+            if (specialCd > 0) {
+                const updatedSpecialCd = specialCd - 1
+                setSpecialCd(updatedSpecialCd)
+                if (updatedSpecialCd === 0) {
+                    setIsSpecialDisabled(false)
+                }
+            }
+            if (mendCd > 0) {
+                const updatedMendCd = mendCd - 1
+                setMendCd(updatedMendCd)
+                if (updatedMendCd === 0) {
+                    setIsMendDisabled(false)
+                }
             }
 
 
@@ -109,16 +171,20 @@ function Battle({ isGameWon, setIsGameWon, locations, setLocations, setIsMenu, i
                 if (updatedCurHp > 0) {
                     setPlayerDmg(dmg)
                 }
+                updateCombatLog(enemy.name, nar)
+                setIsPlayerTurn(true)
+                setHpPotAmount(updatedHpPotAmount)
+                setBoostPotAmount(updatedBoostPotAmount)
+                setDefenseDuration(updatedDuration)
+                setBoostDuration(updatedBoostDuration)
                 setNar(nar)
                 setIsAttackDisabled(false)
-                setIsPlayerTurn(true)
             }, 1500)
         }
     }, [isPlayerTurn])
 
     useEffect(() => {
-        if (isPlayerChoosen) {
-            console.log(playerDmg, playerCurHp)
+        if (isPlayerChoosen && isPlayerTurn && (enemyCurHp > 0)) {
             const updatedCurHp = playerCurHp - playerDmg
             let greenPercent = (updatedCurHp / choosenPokemon.hp) * 100
             if (greenPercent < 0) greenPercent = 0
@@ -129,7 +195,7 @@ function Battle({ isGameWon, setIsGameWon, locations, setLocations, setIsMenu, i
             setPlayerCurHp(updatedCurHp)
         }
 
-    }, [playerDmg])
+    }, [playerDmg, isPlayerTurn])
 
 
     const handleAttack = (e) => {
@@ -155,6 +221,7 @@ function Battle({ isGameWon, setIsGameWon, locations, setLocations, setIsMenu, i
         setIsAttackDisabled(true)
         setIsPlayerTurn(false)
         setNar(nar)
+        updateCombatLog(choosenPokemon.name, nar)
         setEnemyDmg(dmg)
     }
 
@@ -180,6 +247,7 @@ function Battle({ isGameWon, setIsGameWon, locations, setLocations, setIsMenu, i
         setIsAttackDisabled(true)
         setIsPlayerTurn(false)
         setNar(nar)
+        updateCombatLog(choosenPokemon.name, nar)
         setEnemyDmg(dmg)
     }
 
@@ -203,9 +271,12 @@ function Battle({ isGameWon, setIsGameWon, locations, setLocations, setIsMenu, i
             nar = `Precision hit ${dmg} dmg`
         }
 
+        dmg = dmg * 100
+
         setIsAttackDisabled(true)
         setIsPlayerTurn(false)
         setNar(nar)
+        updateCombatLog(choosenPokemon.name, nar)
         setEnemyDmg(dmg)
     }
 
@@ -229,31 +300,108 @@ function Battle({ isGameWon, setIsGameWon, locations, setLocations, setIsMenu, i
             nar = `Special hit ${dmg} dmg`
         }
 
+        dmg += 2
+
+        setSpecialCd(3)
+        setIsSpecialDisabled(true)
         setIsAttackDisabled(true)
         setIsPlayerTurn(false)
         setNar(nar)
+        updateCombatLog(choosenPokemon.name, nar)
         setEnemyDmg(dmg)
     }
 
 
     const handleDefend = () => {
-    /*
-            const defense = choosenPokemon.defense
-            let defMod = defense
-            let dmg = 0
-    
-            setDefendModif(defMod)
-            setIsAttackDisabled(true)
-            setIsPlayerTurn(false)
+        const defense = choosenPokemon.defense
+        let defMod = defense * 2
+        let dmg = 0
+
+        nar = `${choosenPokemon.name}'s defense increased for 3 turns.`
+
+        setDefendModif(defMod)
+        setDefenseDuration(3)
+        setIsAttackDisabled(true)
+        setIsPlayerTurn(false)
+        setNar(nar)
+        updateCombatLog(choosenPokemon.name, nar)
+        setEnemyDmg(dmg)
+    }
+
+    const handleMend = () => {
+
+        let updatedPlayerCurHp = playerCurHp
+        const maxHp = choosenPokemon.hp
+        const heal = Math.round(maxHp * 0.3)
+        updatedPlayerCurHp += heal
+        if (updatedPlayerCurHp > maxHp) updatedPlayerCurHp = maxHp
+        let dmg = 0
+        let nar = `${choosenPokemon.name} is healed for ${updatedPlayerCurHp - playerCurHp}.`
+
+
+        const updatedCurHp = updatedPlayerCurHp
+        let greenPercent = (updatedCurHp / choosenPokemon.hp) * 100
+        if (greenPercent < 0) greenPercent = 0
+        const redPercent = 100 - greenPercent
+        document.querySelector(".hp-left").style.width = `${greenPercent}%`
+        document.querySelector(".hp-damage").style.width = `${redPercent}%`
+
+
+        setMendCd(4)
+        setIsMendDisabled(true)
+        setPlayerCurHp(updatedPlayerCurHp)
+        setIsAttackDisabled(true)
+        setIsPlayerTurn(false)
+        setNar(nar)
+        updateCombatLog(choosenPokemon.name, nar)
+        setEnemyDmg(dmg)
+    }
+
+    const handleHpPotion = () => {
+        let updatedPlayerCurHp = playerCurHp
+        const maxHp = choosenPokemon.hp
+        const heal = 15
+        updatedPlayerCurHp += heal
+        if (updatedPlayerCurHp > maxHp) updatedPlayerCurHp = maxHp
+
+        let nar = `${choosenPokemon.name} used a Health Potion: healed for ${updatedPlayerCurHp - playerCurHp}.`
+
+        const updatedCurHp = updatedPlayerCurHp
+        let greenPercent = (updatedCurHp / choosenPokemon.hp) * 100
+        if (greenPercent < 0) greenPercent = 0
+        const redPercent = 100 - greenPercent
+        document.querySelector(".hp-left").style.width = `${greenPercent}%`
+        document.querySelector(".hp-damage").style.width = `${redPercent}%`
+
+        let updatedHpPotAmount = hpPotAmount - 1
+
+        setNar(nar)
+        updateCombatLog(choosenPokemon.name, nar)
+        setHpPotAmount(updatedHpPotAmount)
+        setPlayerCurHp(updatedCurHp)
+    }
+
+    const handleBoostPotion = () => {
+
+        let nar = ""
+
+        if (boostDuration > 0) {
+            nar = "One Boost Potion is already active!"
             setNar(nar)
-            setEnemyDmg(dmg)
-    */
+            return
+        }
+
+        let boostMod = 1.5
+
+        nar = `${choosenPokemon.name}'s Attack damage increased for 3 turns.`
+
+        let updatedBoostPotAmount = boostPotAmount - 1
+        setBoostPotAmount(updatedBoostPotAmount)
+        setBoostModif(boostMod)
+        setBoostDuration(3)
+        setNar(nar)
+        updateCombatLog(choosenPokemon.name, nar)
     }
-
-    const handleRest = () => {
-
-    }
-
 
 
 
@@ -270,6 +418,7 @@ function Battle({ isGameWon, setIsGameWon, locations, setLocations, setIsMenu, i
                     setPlayerPokemons(updatedPlayerPokemons)
                     setNar(`${choosenPokemon.name} has fallen
                         Choose another pokemon!`)
+                        updateCombatLog(choosenPokemon.name, `${choosenPokemon.name} has fallen`)
                     setIsPlayerChoosen(false)
                 }
             }
@@ -291,13 +440,13 @@ function Battle({ isGameWon, setIsGameWon, locations, setLocations, setIsMenu, i
                 dead: false,
             }
             updatedPlayerPokemons.push(catchedEnemy)
-            console.log(updatedPlayerPokemons)
 
             setPlayerPokemons(updatedPlayerPokemons)
             setIsPlayerChoosen(false)
             setIsBattle(false)
             setEnemy("")
             setNar(nar)
+            updateCombatLog(choosenPokemon.name, `You catched ${enemy.name}!`)
             setActivePanel("location")
 
         } else {
@@ -307,6 +456,7 @@ function Battle({ isGameWon, setIsGameWon, locations, setLocations, setIsMenu, i
             setIsBattle(false)
             setEnemy("")
             setNar(nar)
+            updateCombatLog(choosenPokemon.name, `${enemy.name} has slipped away..`)
             setActivePanel("location")
         }
 
@@ -317,6 +467,7 @@ function Battle({ isGameWon, setIsGameWon, locations, setLocations, setIsMenu, i
         let nar = `You set ${enemy.name} free.
         Choose another location!`
         setNar(nar)
+        updateCombatLog(choosenPokemon.name, `You set ${enemy.name} free.`)
         setIsPlayerChoosen(false)
         setIsBattle(false)
         setEnemy("")
@@ -342,6 +493,46 @@ function Battle({ isGameWon, setIsGameWon, locations, setLocations, setIsMenu, i
     }
 
 
+
+
+
+    const toggleSpecialDisabled = () => {
+        if (isAttackDisabled === false && isSpecialDisabled === false) {
+            return false
+        } else {
+            return true
+        }
+    }
+
+    const toggleMendDisabled = () => {
+        if (isAttackDisabled === false && isMendDisabled === false) {
+            return false
+        } else {
+            return true
+        }
+    }
+
+    const toggleHpPotDisabled = () => {
+        if (isAttackDisabled === false && hpPotAmount !== 0) {
+            return false
+        } else {
+            return true
+        }
+    }
+
+    const toggleBoostPotDisabled = () => {
+        if (isAttackDisabled === false && boostPotAmount !== 0) {
+            return false
+        } else {
+            return true
+        }
+    }
+
+    const toggleAbilityModal = () => {
+        setIsAbilityModalOpen(!isAbilityModalOpen)
+    }
+
+
     return (
         <div className={`${activePanel === "battle" ? "active" : null} battle-container`}>
             {isGameOver ? (
@@ -362,22 +553,36 @@ function Battle({ isGameWon, setIsGameWon, locations, setLocations, setIsMenu, i
                             {isPlayerChoosen ? (
                                 <>
                                     <div className="current-player-poke-container">
-                                        <img className="current-player-poke-img" src={choosenPokemon.picBack} />
+                                        <img className={`${defenseDuration > 0 ? "defend" : null} current-player-poke-img ${boostDuration > 0 ? "boost" : null}`} src={choosenPokemon.picBack} />
                                         <div className="hp">
                                             <div className="hp-percent">{playerCurHp}/{choosenPokemon.hp}</div>
                                             <div className="hp-left"></div>
                                             <div className="hp-damage"></div>
                                         </div>
+                                        <div className='boost-sword'> {boostDuration > 0 ? "⚔️" : null} </div>
                                     </div>
                                     {enemyCurHp <= 0 ? (null) : (
-                                        <div className="button-container">
-                                            <button disabled={isAttackDisabled} onClick={(e) => handleAttack(e)} className="attack-button" type="button">Attack</button>
-                                            <button disabled={isAttackDisabled} onClick={(e) => handleHeavyAttack(e)} className="attack-button" type="button">Heavy Attack</button>
-                                            <button disabled={isAttackDisabled} onClick={(e) => handlePrecisionAttack(e)} className="attack-button" type="button">Precision Attack</button>
-                                            <button disabled={isAttackDisabled} onClick={(e) => handleSpecialAttack(e)} className="attack-button" type="button">Special Attack</button>
-                                            <button disabled={isAttackDisabled} onClick={(e) => handleDefend(e)} className="attack-button" type="button">Defend</button>
-                                            <button disabled={isAttackDisabled} onClick={(e) => handleRest(e)} className="attack-button" type="button">Rest</button>
-                                        </div>
+                                        <>
+                                            <div className="button-container">
+                                                <div className='ability-container'>
+                                                    <div className='ability-title'>Abilities</div>
+                                                    <button disabled={isAttackDisabled} onClick={(e) => handleAttack(e)} className="attack-button" type="button">Attack</button>
+                                                    <button disabled={isAttackDisabled} onClick={(e) => handleHeavyAttack(e)} className="attack-button" type="button">Heavy Attack</button>
+                                                    <button disabled={isAttackDisabled} onClick={(e) => handlePrecisionAttack(e)} className="attack-button" type="button">Precision Attack</button>
+                                                    <button disabled={toggleSpecialDisabled()} onClick={(e) => handleSpecialAttack(e)} className="attack-button" type="button">Special Attack {isSpecialDisabled ? `(${specialCd})` : null}</button>
+                                                    <button disabled={isAttackDisabled} onClick={(e) => handleDefend(e)} className="attack-button" type="button">Defend</button>
+                                                    <button disabled={toggleMendDisabled()} onClick={(e) => handleMend(e)} className="attack-button" type="button">Mend {isMendDisabled ? `(${mendCd})` : null}</button>
+                                                </div>
+                                                <div className='items-container'>
+                                                    <div className='items-title'>Items</div>
+                                                    <button disabled={toggleHpPotDisabled()} onClick={(e) => handleHpPotion(e)} className="attack-button" type="button">Health Potion {`(${hpPotAmount})`}</button>
+                                                    <button disabled={toggleBoostPotDisabled()} onClick={(e) => handleBoostPotion(e)} className="attack-button" type="button">Boost Potion {`(${boostPotAmount})`}</button>
+                                                </div>
+                                            </div>
+                                            <div className='ability-book-container'>
+                                                <img onClick={toggleAbilityModal} className='ability-book' src='pokedex.gif' />
+                                            </div>
+                                        </>
                                     )}
 
                                 </>
@@ -417,7 +622,14 @@ function Battle({ isGameWon, setIsGameWon, locations, setLocations, setIsMenu, i
             )}
 
 
-
+            {enemy ? (<div className='current-location'>{capitalize(currentLocation)}</div>) : null}
+            {isAbilityModalOpen ? (
+                <Abilitymodal choosenPokemon={choosenPokemon} setIsAbilityModalOpen={setIsAbilityModalOpen} />
+            ) : null}
+            {isCombatModalOpen ? (
+                <Combatmodal combatLog={combatLog} setCombatLog={setCombatLog} choosenPokemon={choosenPokemon} enemy={enemy} setIsCombatModalOpen={setIsCombatModalOpen} />
+            ) : null}
+            
 
         </div>
     )

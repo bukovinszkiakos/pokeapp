@@ -12,12 +12,24 @@ function Main({ playerPokemons, setPlayerPokemons, setIsMenu }) {
     const [activePanel, setActivePanel] = useState("")
     const [locations, setLocations] = useState([]);
     const [isGameWon, setIsGameWon] = useState(false)
+    const [specialCd, setSpecialCd] = useState(0)
+    const [isSpecialDisabled, setIsSpecialDisabled] = useState(false)
+    const [currentLocation, setCurrentLocation] = useState("")
+    const [defenseDuration, setDefenseDuration] = useState(0)
+    const [boostDuration, setBoostDuration] = useState(0)
+    const [isMendDisabled, setIsMendDisabled] = useState(false)
+    const [mendCd, setMendCd] = useState(0)
+    const [isCombatModalOpen, setIsCombatModalOpen] = useState(false)
+    const [combatLog, setCombatLog] = useState([])
 
     function capitalize(string) {
         let arr = string.split("-")
-        console.log(arr)
         arr = arr.map(a => a.charAt(0).toUpperCase() + a.slice(1))
         return arr.join("-");
+    }
+
+    const toggleCombatModal = () => {
+        setIsCombatModalOpen(!isCombatModalOpen)
     }
 
     return (
@@ -28,6 +40,11 @@ function Main({ playerPokemons, setPlayerPokemons, setIsMenu }) {
             </div>
             <div className="panel-container">
                 <MyPokemons
+                    setMendCd={setMendCd}
+                    setIsMendDisabled={setIsMendDisabled}
+                    setIsSpecialDisabled={setIsSpecialDisabled}
+                    setSpecialCd={setSpecialCd}
+                    specialCd={specialCd}
                     isBattle={isBattle}
                     setIsBattle={setIsBattle}
                     setIsPlayerChoosen={setIsPlayerChoosen}
@@ -39,8 +56,25 @@ function Main({ playerPokemons, setPlayerPokemons, setIsMenu }) {
                     nar={nar}
                     setNar={setNar}
                     activePanel={activePanel}
-                    setActivePanel={setActivePanel} />
+                    setActivePanel={setActivePanel}
+                    defenseDuration={defenseDuration}
+                    setDefenseDuration={setDefenseDuration}
+                    boostDuration={boostDuration}
+                    setBoostDuration={setBoostDuration} />
                 <Battle
+                    combatLog={combatLog}
+                    setCombatLog={setCombatLog}
+                    setIsCombatModalOpen={setIsCombatModalOpen}
+                    isCombatModalOpen={isCombatModalOpen}
+                    mendCd={mendCd}
+                    isMendDisabled={isMendDisabled}
+                    setMendCd={setMendCd}
+                    setIsMendDisabled={setIsMendDisabled}
+                    currentLocation={currentLocation}
+                    setIsSpecialDisabled={setIsSpecialDisabled}
+                    isSpecialDisabled={isSpecialDisabled}
+                    setSpecialCd={setSpecialCd}
+                    specialCd={specialCd}
                     isGameWon={isGameWon}
                     setIsGameWon={setIsGameWon}
                     locations={locations}
@@ -59,8 +93,15 @@ function Main({ playerPokemons, setPlayerPokemons, setIsMenu }) {
                     activePanel={activePanel}
                     setActivePanel={setActivePanel}
                     setIsMenu={setIsMenu}
+                    defenseDuration={defenseDuration}
+                    setDefenseDuration={setDefenseDuration}
+                    boostDuration={boostDuration}
+                    setBoostDuration={setBoostDuration}
                 />
                 <Locations
+                    combatLog={combatLog}
+                    setCombatLog={setCombatLog}
+                    setCurrentLocation={setCurrentLocation}
                     isGameWon={isGameWon}
                     setIsGameWon={setIsGameWon}
                     locations={locations}
@@ -75,6 +116,7 @@ function Main({ playerPokemons, setPlayerPokemons, setIsMenu }) {
             </div>
             <div className="nar-container">
                 <p className="nar">{nar}</p>
+                <img onClick={toggleCombatModal} className='combat-modal-opener' src='pokedex.gif' />
             </div>
         </div>
     )

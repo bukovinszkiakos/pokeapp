@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-function Locations({ isBattle, setIsBattle, nar, setNar, capitalize, activePanel, setActivePanel, locations, setLocations, setIsGameWon, isGameWon }) {
+function Locations({ setCombatLog, combatLog, setCurrentLocation, isBattle, setIsBattle, setNar, capitalize, activePanel, setActivePanel, locations, setLocations, setIsGameWon, isGameWon }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -14,6 +14,8 @@ function Locations({ isBattle, setIsBattle, nar, setNar, capitalize, activePanel
                 return { ...l, visited: false }
             })
 
+
+            setNar("Choose a location to travel!")
             setLocations(allLocations);
         }
         fetchLocations();
@@ -34,17 +36,27 @@ function Locations({ isBattle, setIsBattle, nar, setNar, capitalize, activePanel
             updatedLocations.find(l => l.name === clickedLocation).visited = true
             setNar(`There is no pokemon to find in ${capitalize(target.textContent)}`)
             setLocations(updatedLocations)
- 
+
             if (locations.filter(l => l.visited).length === locations.length) {
                 setIsGameWon(true)
             }
         } else {
-
             const clickedLocation = target.textContent
+            setCurrentLocation(clickedLocation)
             let updatedLocations = [...locations]
             updatedLocations.find(l => l.name === clickedLocation).visited = true
             setLocations(updatedLocations)
             setActivePanel("mypokemons")
+
+            let updatedCombatLog = [...combatLog]
+
+            updatedCombatLog.push({
+                pokemon: "",
+                text: `${clickedLocation}`
+            })
+
+            setCombatLog(updatedCombatLog)
+
             setIsBattle(true)
         }
     }

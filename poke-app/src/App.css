@@ -109,6 +109,7 @@ opacity: 100%;
   width: 10vw;
   transition: transform 0.3s;
   cursor: pointer;
+  image-rendering: pixelated;
   filter:grayscale(80%)
 }
 .profile-pic:hover {
@@ -222,22 +223,22 @@ opacity: 100%;
   top:8vh;
   width: 12vw;
   height: 70vh;
-  overflow: hidden;
   border-radius: 10px;
   border: 2px solid black;
   box-shadow: 5px 5px 5px black;
-  
 }
 
 .player-poke-list {
-  margin-top: 5vh;
+  position: relative;
+  top:0;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 80%;
-  overflow: auto;
+  height: 50vh;
+  overflow-y: auto;
+  justify-content: flex-start;
   }
 .player-poke-list::-webkit-scrollbar {
   width: 12px; /* Width of the scrollbar */
@@ -255,25 +256,29 @@ opacity: 100%;
   justify-content: center;
   align-items: center;
   margin: 1vh;
-  height: 10vh;
+  height: 8vh;
 }
 
 .player-poke-name {
-  top:10vh;
   text-align: center;
-  position: relative;
+  position: absolute;
   display: inline;
   z-index: 2;
+  font-size: 2vh;
+  transform: translateY(100%);
+
 }
 .player-poke-img {
+  image-rendering: pixelated;
   padding: 0;
-  bottom: 4vh;
+  height: 10vh;
   position: relative;
   z-index: 1;
   transition: transform 0.3s;
   cursor: pointer;
-  
+
 }
+
 .player-poke-img:hover {
   transform: scale(1.2);
   z-index: 2;
@@ -342,30 +347,63 @@ opacity: 100%;
   height: 75vh;
   width: 55vw;
   background-color: rgba(255, 255, 255, 0.8);
+ /* background: linear-gradient(90deg, rgba(213, 57, 0, 0.5) 0%, rgba(255,255,255,1) 50%, rgba(0, 26, 255, 0.479) 100%);
+*/
   left: 50%;
   top: 5vh;
   transform: translateX(-50%);
   border-radius: 50px;
   border: 2px solid black;
   box-shadow: 5px 5px 5px black;
-
 }
+
+.current-location {
+  text-align: center;
+  align-content: center;
+  position: absolute;
+  top: 5vh;
+  font-size: 2vh;
+  letter-spacing: 2vh;
+  font-weight: 600;
+  width: 100%;
+  height: 5vh;
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
+  background-color: #ffae5e;
+}
+
 
 /*********PLAYER********/
 .current-player-poke-container {
   position: absolute;
-  bottom: 5vh;
+  bottom: 0vh;
   left: 5vw;
   height: 20vh;
   width: 20vw;
+  animation: fade-in 1s ease-in;
 }
+
 .current-player-poke-img, .enemy-poke-img {
+  image-rendering: pixelated;
   position: absolute;
   width: 16vw;
   right: 6vw;
   bottom: 0;
 }
-
+.defend {
+  box-shadow: 25px -25px 20px rgba(0, 0, 255, 0.288);
+  border-radius: 120px;
+}
+.boost {
+  border-radius: 120px;
+}
+.boost-sword {
+  position: absolute;
+  right: 2vw;
+  top:0;
+  font-size: 5vh;
+  animation: pulsate 1.5s infinite;
+}
 .hp, .enemy-hp {
   display: flex;
   flex-direction: row;
@@ -389,21 +427,27 @@ opacity: 100%;
   width: 100%;
   background-color: greenyellow;
   height: 1.5vh;
+  transition: width 1s ease-in;
+
 }
 .hp-damage, .enemy-hp-damage {
+  position: absolute;
+  right:0;
   width: 0%;
   background-color: red;
   height: 1.5vh;
+  transition: width 1s ease-in;
 }
 
 
 /*******ENEMY********/
 .enemy-poke-container {
   position: absolute;
-  top: 15vh;
+  top: 25vh;
   right: 0vw;
   height: 20vh;
   width: 20vw;
+  animation: fade-in 1s ease-in;
 }
 
 /*******BUTTONS********/
@@ -411,12 +455,213 @@ opacity: 100%;
   display: flex;
   flex-wrap: wrap;
   position: absolute;
-  bottom: 10vw;
-  right: 5vw;
+  bottom: 3vh;
+  right: 4vw;
   width: 22vw;
+  border: 1px solid black;
+  box-shadow: 3px 3px 3px black;
+  border-radius: 20px;
+  padding: 1vh;
+  background-color: rgba(255, 255, 255, 0.603);
 }
-.attack-button {
 
+
+/********ABILITY MODAL *****/
+.ability-container, .items-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  align-content: center;
+}
+.ability-container {
+  margin-bottom: 2vh;
+}
+.ability-title, .items-title {
+  text-align: center;
+  align-content: center;
+  letter-spacing: 0.5vw;
+  width: 100%;
+  height: 3vh;
+  background: #fcbb7eec;
+  border-radius: 10px;
+  font-weight: 900;
+  font-size: 1.5vh;
+  border: 2px solid black;
+}
+.ability-book-container {
+  position: absolute;
+  height: 5vh;
+  right:1vw;
+  bottom:15vh;
+}
+.ability-book {
+  height: 5vh;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.ability-book:hover {
+  transform: scale(1.2);
+}
+.ability-modal, .combat-modal {
+  display: flex;
+  position: absolute;
+  flex-direction: column;
+  align-items: center;
+  z-index: 100;
+  top: 10vh;
+  width: 40vw;
+  height: 50vh;
+  background-color: rgba(255, 255, 255, 1);
+  left:50%;
+  transform: translateX(-50%);
+  border: 3px solid black;
+  box-shadow: 6px 6px 6px black;
+  border-radius: 12px;
+  font-weight: 600;
+}
+.ability-list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  align-self: center;
+}
+.ability-list-title {
+  width: 100%;
+  border-top:solid 2px black;
+  border-bottom:solid 2px black;
+  background: hsla(29, 100%, 85%, 0.635);
+  text-align: center;
+  font-size: 3vh;
+  letter-spacing: 0.3vw;
+  margin-bottom: 5vh;
+  margin-top: 3vh;
+}
+.ability-row {
+  margin-top: 0.5vh;
+  display: flex;
+  flex-direction: row;
+  width: 70%;
+}
+.ability-name {
+  width: 10vw
+}
+.ability-details {
+  flex-grow: 1;
+  text-align: left;
+}
+
+.ability-symbols {
+  margin-top: 5vh;
+  display: flex;
+  flex-wrap: wrap;
+  width: 36vw;
+  align-items: center;
+  padding: 0.5vh;
+  border-radius: 5px;
+  border: 1px solid black;
+  justify-content: space-evenly;
+  background: hsla(29, 100%, 85%, 0.635);
+}
+.symbol-row {
+  display: flex;
+  width: 8vw;
+}
+.symbol {
+ width: 1.5vw;
+}
+.symbol-detail {
+flex-grow: 1;
+text-align: left;
+}
+
+.close-ability-modal, .close-combat-modal {
+  position: absolute;
+  right: 0.2vw;
+  width: 5vw;
+  z-index: 200;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.close-ability-modal:hover, .close-combat-modal:hover {
+  background-color: rgba(255, 84, 84, 0.8);
+}
+
+/********COMBAT MODAL **********/
+.combat-modal-opener {
+  position: absolute;
+  right: 2vw;
+  top:2vh;
+  height: 5vh;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+.combat-modal-opener:hover {
+  transform: scale(1.2);
+}
+.combat-log-list {
+  margin-top: 3vh;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  overflow-y: auto;
+  width: 35vw;
+}
+.combat-log-list::-webkit-scrollbar {
+  width: 12px; /* Width of the scrollbar */
+}
+.combat-log-list::-webkit-scrollbar-thumb {
+  background: #f8b270a2;
+  border-radius: 5px;
+}
+.combat-log-list::-webkit-scrollbar-track {
+  background: #fff6ed69;; /* Background of the scrollbar track */
+}
+
+.log-row {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.log-poke {
+  width: 10vw;
+  font-weight: 800;
+}
+.log-location {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  font-weight: 800;
+  margin-top: 3vh;
+  margin-bottom: 3vh;
+  height: 2vh;
+  border-top: 1px solid black;
+}
+.log-text {
+  width: 25vw;
+  text-align: left;
+}
+.clear-combat-modal {
+  position: absolute;
+  left: 0.2vw;
+  width: 5vw;
+  z-index: 200;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.clear-combat-modal:hover {
+  background-color: #f7c99da2;
+}
+
+.attack-button {
   width: 10vw;
   height: 4vh;
   background-color: rgba(255, 255, 255, 0.8);
@@ -535,4 +780,15 @@ height: 65vh;
 font-size: 8vh;
 
 left:5vw
+}
+
+
+
+@keyframes fade-in {
+  0% {
+    opacity: 0%;
+  }
+  100% {
+    opacity: 100%;
+  }
 }

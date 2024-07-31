@@ -26,6 +26,15 @@ isBattleWon -> useEffect(flase -> ujraválaszttani (isPlayerChoosen) true-> loca
 
 */
 
+/*
+<audio id="audio" loop autoplay> 
+  <source src="%PUBLIC_URL%/themesong.mp3" type="audio/mpeg">
+</audio> 
+const audio: Partial<HTMLAudioElement> = document.getElementById('audio')
+
+audio.pause()
+*/
+
 
   return (
     <>

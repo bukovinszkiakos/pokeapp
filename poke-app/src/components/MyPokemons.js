@@ -1,4 +1,4 @@
-function MyPokemons({ playerPokemons, setPlayerPokemons, isBattle, isPlayerChoosen, setIsPlayerChoosen, setChoosenPokemon, setNar, activePanel, setActivePanel }) {
+function MyPokemons({ setBoostDuration ,setIsMendDisabled ,setMendCd, setDefenseDuration, setIsSpecialDisabled, setSpecialCd ,playerPokemons, setPlayerPokemons, isBattle, isPlayerChoosen, setIsPlayerChoosen, setChoosenPokemon, setNar, activePanel, setActivePanel }) {
 
     const handleMyPokemonClick = (e) => {
         if (isBattle && !isPlayerChoosen) {
@@ -8,12 +8,17 @@ function MyPokemons({ playerPokemons, setPlayerPokemons, isBattle, isPlayerChoos
                 return p
             })
             const choosenName = e.target.getAttribute("pokename")
-            console.log(updatedPlayerPokemons)
             updatedPlayerPokemons.find(p => p.name === choosenName).choosen = true
             const choosenPoke = playerPokemons.find(p => p.name === choosenName)
 
             if (choosenPoke.dead) return
-            
+
+            setIsMendDisabled(false)
+            setMendCd(0)
+            setSpecialCd(0)
+            setDefenseDuration(0)
+            setBoostDuration(0)
+            setIsSpecialDisabled(false)
             setActivePanel("battle")
             setNar(`${choosenName}, has been chosen. Attack the enemy!`)
             setPlayerPokemons(updatedPlayerPokemons)
