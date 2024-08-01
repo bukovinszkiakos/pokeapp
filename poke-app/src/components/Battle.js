@@ -3,6 +3,7 @@ import Abilitymodal from './Abilitymodal'
 import Combatmodal from './Combatmodal'
 import Pokedexmodal from './Pokedexmodal'
 import Enemydexmodal from './Enemydex'
+import Shop from "./Shop"
 
 function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio, setIsPokedexModalOpen, isPokedexModalOpen, enemy, setEnemy, setCombatLog, combatLog, isCombatModalOpen, setIsCombatModalOpen, boostDuration, setBoostDuration, isMendDisabled, setIsMendDisabled, mendCd, setMendCd, defenseDuration, setDefenseDuration, capitalize, currentLocation, isSpecialDisabled, setIsSpecialDisabled, specialCd, setSpecialCd, isGameWon, setIsGameWon, locations, setLocations, setIsMenu, isBattle, setIsBattle, isPlayerChoosen, setIsPlayerChoosen, nar, setNar, choosenPokemon, setChoosenPokemon, activePanel, setActivePanel, playerPokemons, setPlayerPokemons }) {
 
@@ -24,6 +25,9 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
     const [playerFloatText, setPlayerFloatText] = useState()
     const [isPlayerfloatText, setIsPlayerFloatText] = useState(false)
     const [isFloatDmg, setIsFloatDmg] = useState(true)
+    const [gold, setGold] = useState(0)
+    const [isFirstFightDone, setIsFirstFightDone] = useState(false)
+
 
     useEffect(() => {
         const idle = new Audio('/idle.mp3');
@@ -233,6 +237,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
 
             setEnemyCurHp(updatedCurHp)
 
+            let goldDrop = 0
             let updatedBoostPotAmount = boostPotAmount
             let updatedHpPotAmount = hpPotAmount
             if (updatedCurHp <= 0) {
@@ -240,6 +245,9 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
 
                 const hpDropChance = Math.floor(Math.random() * 100)
                 const boostDropChance = Math.floor(Math.random() * 100)
+                goldDrop = Math.round(enemy.hp / 10)
+
+                nar += ` You gained ${goldDrop} gold!`
 
                 if (hpDropChance < 30) {
                     updatedHpPotAmount++
@@ -251,7 +259,6 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
                 }
 
             }
-
 
             if (specialCd > 0) {
                 const updatedSpecialCd = specialCd - 1
@@ -268,11 +275,12 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
                 }
             }
 
-
             setTimeout(() => {
                 if (updatedCurHp > 0) {
                     setPlayerDmg(dmg)
                 }
+                setGold(prev => prev + goldDrop)
+                setIsFirstFightDone(true)
                 updateCombatLog(enemy.name, nar)
                 setIsPlayerTurn(true)
                 setHpPotAmount(updatedHpPotAmount)
@@ -667,6 +675,20 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
 
     return (
         <div className={`${activePanel === "battle" ? "active" : null} battle-container`}>
+            <div className='inventory'>
+                <div className='inv-slot'>
+                    <img className="inv-pic" src="./gold.png" />
+                    <div className='inv-amount'>x {gold}</div>
+                </div>
+                <div className='inv-slot'>
+                    <img className="inv-pic" src="./hppot.png" />
+                    <div className='inv-amount'>x {hpPotAmount}</div>
+                </div>
+                <div className='inv-slot'>
+                    <img className="inv-pic" src="./boostpot.png" />
+                    <div className='inv-amount'>x {boostPotAmount}</div>
+                </div>
+            </div>
             {isGameOver ? (
                 <>
                     <div className='game-over'>Game over</div>
@@ -682,81 +704,84 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
                             <img className='game-won-pic' src='https://media.discordapp.net/attachments/1263120726966272084/1267860952372477972/file_3.png?ex=66aa5306&is=66a90186&hm=b0b6f7fd2418dcc920d780fe88b40136fabf29e51ce29ff3966f52334f2000a4&=&format=webp&quality=lossless&width=687&height=386' />
                         </>) : (
                         <>
-                            {isPlayerChoosen ? (
+                            {isBattle ? (
                                 <>
-                                    <div className="current-player-poke-container">
-                                        <img className={`${defenseDuration > 0 ? "defend" : null} current-player-poke-img ${boostDuration > 0 ? "boost" : null}`} src={choosenPokemon.picBack} />
-                                        {isPlayerfloatText ? (
-                                            <div className={`${isFloatDmg ? "float-dmg" : "float-heal"} player-float-text`}>{playerFloatText}</div>
-                                        ) : (null)}
-                                        <div className="hp">
-                                            <div className="hp-percent">{playerCurHp}/{choosenPokemon.hp}</div>
-                                            <div className="hp-left"></div>
-                                            <div className="hp-damage"></div>
-                                        </div>
-                                        <div className='boost-sword'> {boostDuration > 0 ? "⚔️" : null} </div>
-                                    </div>
-                                    {enemyCurHp <= 0 ? (null) : (
+                                    {isPlayerChoosen ? (
                                         <>
-                                            <div className="button-container">
-                                                <div className='ability-container'>
-                                                    <div className='ability-title'>Abilities</div>
-                                                    <button disabled={isAttackDisabled} onClick={(e) => handleAttack(e)} className="attack-button" type="button">Attack</button>
-                                                    <button disabled={isAttackDisabled} onClick={(e) => handleHeavyAttack(e)} className="attack-button" type="button">Heavy Attack</button>
-                                                    <button disabled={isAttackDisabled} onClick={(e) => handlePrecisionAttack(e)} className="attack-button" type="button">Precision Attack</button>
-                                                    <button disabled={toggleSpecialDisabled()} onClick={(e) => handleSpecialAttack(e)} className="attack-button" type="button">Special Attack {isSpecialDisabled ? `(${specialCd})` : null}</button>
-                                                    <button disabled={isAttackDisabled} onClick={(e) => handleDefend(e)} className="attack-button" type="button">Defend</button>
-                                                    <button disabled={toggleMendDisabled()} onClick={(e) => handleMend(e)} className="attack-button" type="button">Mend {isMendDisabled ? `(${mendCd})` : null}</button>
+                                            <div className="current-player-poke-container">
+                                                <img className={`${defenseDuration > 0 ? "defend" : null} current-player-poke-img ${boostDuration > 0 ? "boost" : null}`} src={choosenPokemon.picBack} />
+                                                {isPlayerfloatText ? (
+                                                    <div className={`${isFloatDmg ? "float-dmg" : "float-heal"} player-float-text`}>{playerFloatText}</div>
+                                                ) : (null)}
+                                                <div className="hp">
+                                                    <div className="hp-percent">{playerCurHp}/{choosenPokemon.hp}</div>
+                                                    <div className="hp-left"></div>
+                                                    <div className="hp-damage"></div>
                                                 </div>
-                                                <div className='items-container'>
-                                                    <div className='items-title'>Items</div>
-                                                    <button disabled={toggleHpPotDisabled()} onClick={(e) => handleHpPotion(e)} className="attack-button" type="button">Health Potion {`(${hpPotAmount})`}</button>
-                                                    <button disabled={toggleBoostPotDisabled()} onClick={(e) => handleBoostPotion(e)} className="attack-button" type="button">Boost Potion {`(${boostPotAmount})`}</button>
-                                                </div>
+                                                <div className='boost-sword'> {boostDuration > 0 ? "⚔️" : null} </div>
                                             </div>
-                                            <div className='ability-book-container'>
-                                                <img onClick={toggleAbilityModal} className='ability-book' src='pokedex.gif' />
-                                            </div>
-                                        </>
-                                    )}
+                                            {enemyCurHp <= 0 ? (null) : (
+                                                <>
+                                                    <div className="button-container">
+                                                        <div className='ability-container'>
+                                                            <div className='ability-title'>Abilities</div>
+                                                            <button disabled={isAttackDisabled} onClick={(e) => handleAttack(e)} className="attack-button" type="button">Attack</button>
+                                                            <button disabled={isAttackDisabled} onClick={(e) => handleHeavyAttack(e)} className="attack-button" type="button">Heavy Attack</button>
+                                                            <button disabled={isAttackDisabled} onClick={(e) => handlePrecisionAttack(e)} className="attack-button" type="button">Precision Attack</button>
+                                                            <button disabled={toggleSpecialDisabled()} onClick={(e) => handleSpecialAttack(e)} className="attack-button" type="button">Special Attack {isSpecialDisabled ? `(${specialCd})` : null}</button>
+                                                            <button disabled={isAttackDisabled} onClick={(e) => handleDefend(e)} className="attack-button" type="button">Defend</button>
+                                                            <button disabled={toggleMendDisabled()} onClick={(e) => handleMend(e)} className="attack-button" type="button">Mend {isMendDisabled ? `(${mendCd})` : null}</button>
+                                                        </div>
+                                                        <div className='items-container'>
+                                                            <div className='items-title'>Items</div>
+                                                            <button disabled={toggleHpPotDisabled()} onClick={(e) => handleHpPotion(e)} className="attack-button" type="button">Health Potion {`(${hpPotAmount})`}</button>
+                                                            <button disabled={toggleBoostPotDisabled()} onClick={(e) => handleBoostPotion(e)} className="attack-button" type="button">Boost Potion {`(${boostPotAmount})`}</button>
+                                                        </div>
+                                                    </div>
+                                                    <div className='ability-book-container'>
+                                                        <img onClick={toggleAbilityModal} className='ability-book' src='pokedex.gif' />
+                                                    </div>
+                                                </>
+                                            )}
 
-                                </>
-                            ) : (
-                                null
-                            )}
-                            {enemy ? (
-                                <>
-                                    <div className="enemy-poke-container">
-                                        <img className="enemy-poke-img" src={enemy.picFront} />
-                                        <img onClick={() => setIsEnemydexModalOpen(!isEnemydexModalOpen)} className="enemydex-icon" src="pokedex.gif" />
-                                        {isEnemyfloatText ? (
-                                            <div className='enemy-float-text'>{enemyFloatText}</div>
-                                        ) : (null)}
-                                        <div className="enemy-hp">
-                                            <div className="enemy-hp-percent">{enemyCurHp}/{enemy.hp}</div>
-                                            <>
-                                                <div className="enemy-hp-left"></div>
-                                                <div className="enemy-hp-damage"></div>
-                                            </>
-                                        </div>
-                                    </div>
-                                    {enemyCurHp <= 0 ? (
-                                        <div className='catch-pokemon'>
-                                            <button onClick={handleCatch} className='catch' type='button'>Catch it</button>
-                                            <button onClick={handleLeave} className='leave' type='button'>Leave it</button>
-                                        </div>) : (
+                                        </>
+                                    ) : (
+                                        null
+                                    )}
+                                    {enemy ? (
+                                        <>
+                                            <div className="enemy-poke-container">
+                                                <img className="enemy-poke-img" src={enemy.picFront} />
+                                                <img onClick={() => setIsEnemydexModalOpen(!isEnemydexModalOpen)} className="enemydex-icon" src="pokedex.gif" />
+                                                {isEnemyfloatText ? (
+                                                    <div className='enemy-float-text'>{enemyFloatText}</div>
+                                                ) : (null)}
+                                                <div className="enemy-hp">
+                                                    <div className="enemy-hp-percent">{enemyCurHp}/{enemy.hp}</div>
+                                                    <>
+                                                        <div className="enemy-hp-left"></div>
+                                                        <div className="enemy-hp-damage"></div>
+                                                    </>
+                                                </div>
+                                            </div>
+                                            {enemyCurHp <= 0 ? (
+                                                <div className='catch-pokemon'>
+                                                    <button onClick={handleCatch} className='catch' type='button'>Catch it</button>
+                                                    <button onClick={handleLeave} className='leave' type='button'>Leave it</button>
+                                                </div>) : (
+                                                null
+                                            )}
+                                        </>
+
+                                    ) : (
                                         null
                                     )}
                                 </>
-
                             ) : (
-                                null
+                                <Shop isFirstFightDone={isFirstFightDone} gold={gold} setGold={setGold} setHpPotAmount={setHpPotAmount} setBoostPotAmount={setBoostPotAmount} />
                             )}
                         </>
                     )}
-
-
-
                 </>
             )}
 
