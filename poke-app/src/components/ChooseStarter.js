@@ -15,14 +15,14 @@ function ChooseStarter({ playerPokemons, setPlayerPokemons }) {
     ]
 
     useEffect(() => {
-        const fetchStarters = async (url) => {
+        const fetchData = async (url) => {
             try {
                 const response = await fetch(url)
                 if (!response.ok) {
-                    throw new Error("Fetching starters run into error")
+                    throw new Error("Fetching run into error")
                 }
-                const starterPokemon = await response.json()
-                return starterPokemon
+                const data = await response.json()
+                return data
 
             } catch (error) {
                 console.error(error)
@@ -31,9 +31,9 @@ function ChooseStarter({ playerPokemons, setPlayerPokemons }) {
 
         const getStarters = async () => {
             const starters = await Promise.all(
-                starterUrls.map(u => fetchStarters(u))
+                starterUrls.map(u => fetchData(u))
             )
-            const starterPokemonsData = []
+            let starterPokemonsData = []
             starters.map(p => {
                 const pokeData = {
                     name: p.species.name,
@@ -43,11 +43,21 @@ function ChooseStarter({ playerPokemons, setPlayerPokemons }) {
                     attack: p.stats[1].base_stat,
                     defense: p.stats[2].base_stat,
                     special: p.stats[3].base_stat,
+                    type: p.types[0].type.name,
+                    typeUrl: p.types[0].type.url,
                     choosen: false,
                     dead: false
                 }
                 starterPokemonsData.push(pokeData)
             })
+
+            const damageRelations = await Promise.all(
+                starterPokemonsData.map(p => fetchData(p.typeUrl)))
+
+            starterPokemonsData = starterPokemonsData.map((p, i) => {
+                return { ...p, dmgRel: damageRelations[i]["damage_relations"] }
+            })
+
             return setStarterPokemons(starterPokemonsData)
         }
 

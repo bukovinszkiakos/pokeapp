@@ -1,6 +1,31 @@
 import ChooseStarter from "./ChooseStarter"
+import { useEffect } from "react";
 
-function Menu({ setIsMenu, playerPokemons, setPlayerPokemons }) {
+function Menu({ themeAudio, setThemeAudio, setIsSound, isSound, battleAudio, idleAudio, setIsMenu, playerPokemons, setPlayerPokemons }) {
+
+    useEffect(() => {
+        const theme = new Audio('/theme.mp3');
+        theme.loop = true;
+        theme.volume = 0.05
+        setThemeAudio(theme);
+    }, []);
+
+
+    const handleMuteClick = () => {
+        themeAudio.pause()
+        setIsSound(false)
+    }
+
+    const handleSoundClick = () => {
+        themeAudio.play()
+        setIsSound(true)
+    }
+
+    const handleStartClick = ( ) => {
+        setIsMenu(false)
+        themeAudio.pause()
+    }
+
 
     return (
         <div className="menu">
@@ -17,9 +42,15 @@ function Menu({ setIsMenu, playerPokemons, setPlayerPokemons }) {
                 </ul>
             </div>
             <div className='start-container'>
-                <button onClick={() => setIsMenu(false)} className="start-button" type='button'>{playerPokemons.length === 3 ? "Start Game!" : "" }</button>
+                <button onClick={handleStartClick} className="start-button" type='button'>{playerPokemons.length === 3 ? "Start Game!" : ""}</button>
             </div>
             <ChooseStarter playerPokemons={playerPokemons} setPlayerPokemons={setPlayerPokemons} />
+            {isSound ? (
+                <div onClick={handleMuteClick} className="sound-icon">🔊</div>
+            ) : (
+                <div onClick={handleSoundClick} className="sound-icon">🔇</div>
+            )}
+
         </div>
     )
 }

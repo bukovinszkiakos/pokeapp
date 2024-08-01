@@ -8,7 +8,13 @@ function App() {
 
   const [isMenu, setIsMenu] = useState(true)
   const [playerPokemons, setPlayerPokemons] = useState([])
-  
+  const [battleAudio, setBattleAudio] = useState(null);
+  const [idleAudio, setIdleAudio] = useState(null);
+  const [themeAudio, setThemeAudio] = useState(null);
+  const [isSound, setIsSound] = useState(false)
+
+  //idle + battle zene
+
 
   /*
 isMenu 
@@ -26,25 +32,38 @@ isBattleWon -> useEffect(flase -> ujraválaszttani (isPlayerChoosen) true-> loca
 
 */
 
-/*
-<audio id="audio" loop autoplay> 
-  <source src="%PUBLIC_URL%/themesong.mp3" type="audio/mpeg">
-</audio> 
-const audio: Partial<HTMLAudioElement> = document.getElementById('audio')
+  /*
+  <audio id="audio" loop autoplay> 
+    <source src="%PUBLIC_URL%/themesong.mp3" type="audio/mpeg">
+  </audio> 
+  const audio: Partial<HTMLAudioElement> = document.getElementById('audio')
+  
+  audio.pause()
+  */
 
-audio.pause()
-*/
 
 
   return (
     <>
       {isMenu ? (
         <Menu
+          themeAudio={themeAudio}
+          setThemeAudio={setThemeAudio}
+          setIsSound={setIsSound}
+          isSound={isSound}
+          idleAudio={idleAudio}
+          battleAudio={battleAudio}
           setIsMenu={setIsMenu}
           playerPokemons={playerPokemons}
           setPlayerPokemons={setPlayerPokemons} />
       ) : (
         <Main
+          setIsSound={setIsSound}
+          isSound={isSound}
+          setBattleAudio={setBattleAudio}
+          setIdleAudio={setIdleAudio}
+          idleAudio={idleAudio}
+          battleAudio={battleAudio}
           setIsMenu={setIsMenu}
           playerPokemons={playerPokemons}
           setPlayerPokemons={setPlayerPokemons}

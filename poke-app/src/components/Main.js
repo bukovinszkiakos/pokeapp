@@ -3,9 +3,9 @@ import Battle from "./Battle"
 import Locations from "./Locations"
 import { useState } from "react"
 
-function Main({ playerPokemons, setPlayerPokemons, setIsMenu }) {
+function Main({ setIsSound, isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio, playerPokemons, setPlayerPokemons, setIsMenu }) {
 
-    const [isBattle, setIsBattle] = useState()
+    const [isBattle, setIsBattle] = useState(false)
     const [nar, setNar] = useState()
     const [isPlayerChoosen, setIsPlayerChoosen] = useState(false)
     const [choosenPokemon, setChoosenPokemon] = useState({})
@@ -21,6 +21,8 @@ function Main({ playerPokemons, setPlayerPokemons, setIsMenu }) {
     const [mendCd, setMendCd] = useState(0)
     const [isCombatModalOpen, setIsCombatModalOpen] = useState(false)
     const [combatLog, setCombatLog] = useState([])
+    const [enemy, setEnemy] = useState()
+    const [isPokedexModalOpen, setIsPokedexModalOpen] = useState(false)
 
     function capitalize(string) {
         let arr = string.split("-")
@@ -32,6 +34,21 @@ function Main({ playerPokemons, setPlayerPokemons, setIsMenu }) {
         setIsCombatModalOpen(!isCombatModalOpen)
     }
 
+    const handleMuteClick = () => {
+        idleAudio.pause()
+        battleAudio.pause()
+        setIsSound(false)
+    }
+    const hadnleSoundClick = () => {
+        if (isBattle) {
+            battleAudio.play()
+        } else {
+            idleAudio.play()
+        }
+        setIsSound(true)
+
+    }
+
     return (
         <div className='main'>
             <div className='main-background-container'>
@@ -40,6 +57,9 @@ function Main({ playerPokemons, setPlayerPokemons, setIsMenu }) {
             </div>
             <div className="panel-container">
                 <MyPokemons
+                    isPokedexModalOpen={isPokedexModalOpen}
+                    setIsPokedexModalOpen={setIsPokedexModalOpen}
+                    enemy={enemy}
                     setMendCd={setMendCd}
                     setIsMendDisabled={setIsMendDisabled}
                     setIsSpecialDisabled={setIsSpecialDisabled}
@@ -62,6 +82,15 @@ function Main({ playerPokemons, setPlayerPokemons, setIsMenu }) {
                     boostDuration={boostDuration}
                     setBoostDuration={setBoostDuration} />
                 <Battle
+                    isSound={isSound}
+                    setBattleAudio={setBattleAudio}
+                    setIdleAudio={setIdleAudio}
+                    idleAudio={idleAudio}
+                    battleAudio={battleAudio}
+                    isPokedexModalOpen={isPokedexModalOpen}
+                    setIsPokedexModalOpen={setIsPokedexModalOpen}
+                    enemy={enemy}
+                    setEnemy={setEnemy}
                     combatLog={combatLog}
                     setCombatLog={setCombatLog}
                     setIsCombatModalOpen={setIsCombatModalOpen}
@@ -118,7 +147,11 @@ function Main({ playerPokemons, setPlayerPokemons, setIsMenu }) {
                 <p className="nar">{nar}</p>
                 <img onClick={toggleCombatModal} className='combat-modal-opener' src='pokedex.gif' />
             </div>
-        </div>
+            {isSound ? (
+                <div onClick={handleMuteClick} className="sound-icon">🔊</div>
+            ) : (
+                <div onClick={hadnleSoundClick} className="sound-icon">🔇</div>
+            )}        </div>
     )
 }
 

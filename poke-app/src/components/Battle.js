@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import Abilitymodal from './Abilitymodal'
 import Combatmodal from './Combatmodal'
+import Pokedexmodal from './Pokedexmodal'
+import Enemydexmodal from './Enemydex'
 
-function Battle({ setCombatLog,combatLog,isCombatModalOpen, setIsCombatModalOpen, boostDuration, setBoostDuration, isMendDisabled, setIsMendDisabled, mendCd, setMendCd, defenseDuration, setDefenseDuration, capitalize, currentLocation, isSpecialDisabled, setIsSpecialDisabled, specialCd, setSpecialCd, isGameWon, setIsGameWon, locations, setLocations, setIsMenu, isBattle, setIsBattle, isPlayerChoosen, setIsPlayerChoosen, nar, setNar, choosenPokemon, setChoosenPokemon, activePanel, setActivePanel, playerPokemons, setPlayerPokemons }) {
-    const [enemy, setEnemy] = useState()
+function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio, setIsPokedexModalOpen, isPokedexModalOpen, enemy, setEnemy, setCombatLog, combatLog, isCombatModalOpen, setIsCombatModalOpen, boostDuration, setBoostDuration, isMendDisabled, setIsMendDisabled, mendCd, setMendCd, defenseDuration, setDefenseDuration, capitalize, currentLocation, isSpecialDisabled, setIsSpecialDisabled, specialCd, setSpecialCd, isGameWon, setIsGameWon, locations, setLocations, setIsMenu, isBattle, setIsBattle, isPlayerChoosen, setIsPlayerChoosen, nar, setNar, choosenPokemon, setChoosenPokemon, activePanel, setActivePanel, playerPokemons, setPlayerPokemons }) {
+
     const [enemyDmg, setEnemyDmg] = useState(0)
     const [enemyCurHp, setEnemyCurHp] = useState(0)
     const [playerDmg, setPlayerDmg] = useState(0)
@@ -16,9 +18,41 @@ function Battle({ setCombatLog,combatLog,isCombatModalOpen, setIsCombatModalOpen
     const [hpPotAmount, setHpPotAmount] = useState(0)
     const [boostPotAmount, setBoostPotAmount] = useState(0)
     const [isAbilityModalOpen, setIsAbilityModalOpen] = useState(false)
-    const [isEnemyDead, setIsEnemyDead]  = useState(false)
+    const [isEnemydexModalOpen, setIsEnemydexModalOpen] = useState(false)
+    const [enemyFloatText, setEnemyFloatText] = useState()
+    const [isEnemyfloatText, setIsEnemyFloatText] = useState(false)
+    const [playerFloatText, setPlayerFloatText] = useState()
+    const [isPlayerfloatText, setIsPlayerFloatText] = useState(false)
+    const [isFloatDmg, setIsFloatDmg] = useState(true)
 
-    //https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/39da6277-d7e8-4885-9cd8-12328bbe53a9/dgccfm6-057d4613-192f-4d6e-b119-ea31935fa93c.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzM5ZGE2Mjc3LWQ3ZTgtNDg4NS05Y2Q4LTEyMzI4YmJlNTNhOVwvZGdjY2ZtNi0wNTdkNDYxMy0xOTJmLTRkNmUtYjExOS1lYTMxOTM1ZmE5M2MucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.tchOcaqXaVdR77UiQC9kcSd2TGH5ccvh35LfLFNnmzw
+    useEffect(() => {
+        const idle = new Audio('/idle.mp3');
+        const battle = new Audio('/battle.mp3');
+
+        idle.loop = true;
+        battle.loop = true;
+        idle.volume = 0.05
+        battle.volume = 0.05
+
+        setIdleAudio(idle);
+        setBattleAudio(battle);
+
+    }, []);
+
+    useEffect(() => {
+        if (battleAudio) {
+            if (isBattle && isSound) {
+                idleAudio.pause();
+                battleAudio.currentTime = 0;
+                battleAudio.play();
+            } else if (isSound) {
+                battleAudio.pause();
+                idleAudio.currentTime = 0;
+                idleAudio.play()
+            }
+        }
+    }, [isBattle, idleAudio, battleAudio]);
+
 
 
     const updateCombatLog = (poke, logText) => {
@@ -40,11 +74,24 @@ function Battle({ setCombatLog,combatLog,isCombatModalOpen, setIsCombatModalOpen
     useEffect(() => {
         if (isBattle) {
             const enemyAppear = async () => {
+                const fetchData = async (url) => {
+                    try {
+                        const response = await fetch(url)
+                        if (!response.ok) {
+                            throw new Error("Fetching run into error")
+                        }
+                        const data = await response.json()
+                        return data
+
+                    } catch (error) {
+                        console.error(error)
+                    }
+                }
                 const fetchRandomPokemon = async (number) => {
                     try {
                         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${number}`);
                         const data = await response.json();
-                        const pokeData = {
+                        let pokeData = {
                             name: data.species.name,
                             picFront: data.sprites.front_default,
                             picBack: data.sprites.back_default,
@@ -52,7 +99,21 @@ function Battle({ setCombatLog,combatLog,isCombatModalOpen, setIsCombatModalOpen
                             attack: data.stats[1].base_stat,
                             defense: data.stats[2].base_stat,
                             special: data.stats[3].base_stat,
+                            type: data.types[0].type.name,
+                            typeUrl: data.types[0].type.url
                         }
+
+                        const damageRelations = await fetchData(pokeData.typeUrl)
+                        pokeData = {
+                            ...pokeData,
+                            dmgRel: damageRelations["damage_relations"]
+                        }
+
+                        console.log(pokeData)
+
+
+
+
                         setEnemy(pokeData);
                         setEnemyCurHp(pokeData.hp)
                         setNar(`A wild ${pokeData.name} appeared!
@@ -75,18 +136,61 @@ function Battle({ setCombatLog,combatLog,isCombatModalOpen, setIsCombatModalOpen
     }, [isBattle])
 
 
+    const applyDmgModifier = (normalDmg, targetType, attackerDmgRel) => {
+
+        let updatedDmg = normalDmg
+        const dblDmgTo = []
+        const halfDmgTo = []
+
+        attackerDmgRel["double_damage_to"].map(r => {
+            dblDmgTo.push(r.name)
+        })
+        attackerDmgRel["half_damage_to"].map(r => {
+            halfDmgTo.push(r.name)
+        })
+
+        if (dblDmgTo.includes(targetType)) {
+            updatedDmg = normalDmg * 2
+        }
+        if (halfDmgTo.includes(targetType)) {
+            updatedDmg = normalDmg / 2
+        }
+
+        updatedDmg = Math.round(updatedDmg)
+
+        console.log("normal", normalDmg)
+        console.log("upd", updatedDmg)
+
+        return updatedDmg
+    }
+
+
+
     useEffect(() => {
         if (enemy && !isPlayerTurn) {
 
             let enemyCalculatedDmg = enemyDmg
             let updatedBoostDuration
             if (boostDuration > 0) {
-                enemyCalculatedDmg = enemyCalculatedDmg * boostModif
+                enemyCalculatedDmg = Math.round(enemyCalculatedDmg * boostModif)
                 updatedBoostDuration = boostDuration - 1
             }
 
+            enemyCalculatedDmg = applyDmgModifier(enemyCalculatedDmg, enemy.type, choosenPokemon.dmgRel)
 
             const updatedCurHp = enemyCurHp - enemyCalculatedDmg
+
+            if (enemyCalculatedDmg > 0) {
+                setEnemyFloatText(enemyCalculatedDmg)
+            } else if (enemyCalculatedDmg === 0) {
+                setEnemyFloatText("Miss")
+            }
+            setIsEnemyFloatText(true)
+            setTimeout(() => {
+                setIsEnemyFloatText(false)
+            }, 2000)
+
+
 
             if (updatedCurHp <= 0) {
                 if (locations.filter(l => l.visited).length === locations.length) {
@@ -133,8 +237,6 @@ function Battle({ setCombatLog,combatLog,isCombatModalOpen, setIsCombatModalOpen
             let updatedHpPotAmount = hpPotAmount
             if (updatedCurHp <= 0) {
                 nar = `${enemy.name} has been defeated`
-
-                setIsEnemyDead(true)
 
                 const hpDropChance = Math.floor(Math.random() * 100)
                 const boostDropChance = Math.floor(Math.random() * 100)
@@ -185,7 +287,26 @@ function Battle({ setCombatLog,combatLog,isCombatModalOpen, setIsCombatModalOpen
 
     useEffect(() => {
         if (isPlayerChoosen && isPlayerTurn && (enemyCurHp > 0)) {
-            const updatedCurHp = playerCurHp - playerDmg
+
+            let curPlayerDmg = playerDmg
+
+            curPlayerDmg = applyDmgModifier(curPlayerDmg, choosenPokemon.type, enemy.dmgRel)
+
+            const updatedCurHp = playerCurHp - curPlayerDmg
+
+
+
+            if (curPlayerDmg > 0) {
+                setPlayerFloatText(curPlayerDmg)
+            } else if (curPlayerDmg === 0) {
+                setPlayerFloatText("Miss")
+            }
+            setIsPlayerFloatText(true)
+            setTimeout(() => {
+                setIsPlayerFloatText(false)
+            }, 2000)
+
+
             let greenPercent = (updatedCurHp / choosenPokemon.hp) * 100
             if (greenPercent < 0) greenPercent = 0
             const redPercent = 100 - greenPercent
@@ -338,7 +459,6 @@ function Battle({ setCombatLog,combatLog,isCombatModalOpen, setIsCombatModalOpen
         let dmg = 0
         let nar = `${choosenPokemon.name} is healed for ${updatedPlayerCurHp - playerCurHp}.`
 
-
         const updatedCurHp = updatedPlayerCurHp
         let greenPercent = (updatedCurHp / choosenPokemon.hp) * 100
         if (greenPercent < 0) greenPercent = 0
@@ -365,6 +485,14 @@ function Battle({ setCombatLog,combatLog,isCombatModalOpen, setIsCombatModalOpen
         if (updatedPlayerCurHp > maxHp) updatedPlayerCurHp = maxHp
 
         let nar = `${choosenPokemon.name} used a Health Potion: healed for ${updatedPlayerCurHp - playerCurHp}.`
+
+        setIsFloatDmg(false)
+        setPlayerFloatText(updatedPlayerCurHp - playerCurHp)
+        setIsPlayerFloatText(true)
+        setTimeout(() => {
+            setIsPlayerFloatText(false)
+        }, 2000)
+
 
         const updatedCurHp = updatedPlayerCurHp
         let greenPercent = (updatedCurHp / choosenPokemon.hp) * 100
@@ -418,7 +546,7 @@ function Battle({ setCombatLog,combatLog,isCombatModalOpen, setIsCombatModalOpen
                     setPlayerPokemons(updatedPlayerPokemons)
                     setNar(`${choosenPokemon.name} has fallen
                         Choose another pokemon!`)
-                        updateCombatLog(choosenPokemon.name, `${choosenPokemon.name} has fallen`)
+                    updateCombatLog(choosenPokemon.name, `${choosenPokemon.name} has fallen`)
                     setIsPlayerChoosen(false)
                 }
             }
@@ -427,8 +555,10 @@ function Battle({ setCombatLog,combatLog,isCombatModalOpen, setIsCombatModalOpen
 
 
     const handleCatch = () => {
+        document.querySelector(".battle-container").style.backgroundImage = ""
         let nar = ""
         const catchChance = Math.floor(Math.random() * 100)
+
 
         if (catchChance > 49) {
             nar = `You catched ${enemy.name}! You can use him in your next fights!
@@ -464,6 +594,8 @@ function Battle({ setCombatLog,combatLog,isCombatModalOpen, setIsCombatModalOpen
 
 
     const handleLeave = () => {
+        document.querySelector(".battle-container").style.backgroundImage = ""
+
         let nar = `You set ${enemy.name} free.
         Choose another location!`
         setNar(nar)
@@ -554,6 +686,9 @@ function Battle({ setCombatLog,combatLog,isCombatModalOpen, setIsCombatModalOpen
                                 <>
                                     <div className="current-player-poke-container">
                                         <img className={`${defenseDuration > 0 ? "defend" : null} current-player-poke-img ${boostDuration > 0 ? "boost" : null}`} src={choosenPokemon.picBack} />
+                                        {isPlayerfloatText ? (
+                                            <div className={`${isFloatDmg ? "float-dmg" : "float-heal"} player-float-text`}>{playerFloatText}</div>
+                                        ) : (null)}
                                         <div className="hp">
                                             <div className="hp-percent">{playerCurHp}/{choosenPokemon.hp}</div>
                                             <div className="hp-left"></div>
@@ -593,6 +728,10 @@ function Battle({ setCombatLog,combatLog,isCombatModalOpen, setIsCombatModalOpen
                                 <>
                                     <div className="enemy-poke-container">
                                         <img className="enemy-poke-img" src={enemy.picFront} />
+                                        <img onClick={() => setIsEnemydexModalOpen(!isEnemydexModalOpen)} className="enemydex-icon" src="pokedex.gif" />
+                                        {isEnemyfloatText ? (
+                                            <div className='enemy-float-text'>{enemyFloatText}</div>
+                                        ) : (null)}
                                         <div className="enemy-hp">
                                             <div className="enemy-hp-percent">{enemyCurHp}/{enemy.hp}</div>
                                             <>
@@ -629,7 +768,12 @@ function Battle({ setCombatLog,combatLog,isCombatModalOpen, setIsCombatModalOpen
             {isCombatModalOpen ? (
                 <Combatmodal combatLog={combatLog} setCombatLog={setCombatLog} choosenPokemon={choosenPokemon} enemy={enemy} setIsCombatModalOpen={setIsCombatModalOpen} />
             ) : null}
-            
+            {isPokedexModalOpen ? (
+                <Pokedexmodal playerPokemons={playerPokemons} setIsPokedexModalOpen={setIsPokedexModalOpen} />
+            ) : null}
+            {isEnemydexModalOpen ? (
+                <Enemydexmodal enemy={enemy} setIsEnemydexModalOpen={setIsEnemydexModalOpen} />
+            ) : null}
 
         </div>
     )
