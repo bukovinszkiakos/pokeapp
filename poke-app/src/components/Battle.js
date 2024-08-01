@@ -28,6 +28,8 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
     const [gold, setGold] = useState(0)
     const [isFirstFightDone, setIsFirstFightDone] = useState(false)
 
+    const [isMiss, setIsMiss] = useState(false)
+
 
     useEffect(() => {
         const idle = new Audio('/idle.mp3');
@@ -162,9 +164,6 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
 
         updatedDmg = Math.round(updatedDmg)
 
-        console.log("normal", normalDmg)
-        console.log("upd", updatedDmg)
-
         return updatedDmg
     }
 
@@ -185,9 +184,11 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
             const updatedCurHp = enemyCurHp - enemyCalculatedDmg
 
             if (enemyCalculatedDmg > 0) {
+                console.log("MEND")
                 setEnemyFloatText(enemyCalculatedDmg)
-            } else if (enemyCalculatedDmg === 0) {
+            } else if (isMiss) {
                 setEnemyFloatText("Miss")
+                setIsMiss(false)
             }
             setIsEnemyFloatText(true)
             setTimeout(() => {
@@ -303,7 +304,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
             const updatedCurHp = playerCurHp - curPlayerDmg
 
 
-
+            setIsFloatDmg(true)
             if (curPlayerDmg > 0) {
                 setPlayerFloatText(curPlayerDmg)
             } else if (curPlayerDmg === 0) {
@@ -339,6 +340,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
             dmg = Math.round(dmg)
             nar = `Critical hit! ${dmg} dmg`
         } else if (hitChance < 20) {
+            setIsMiss(true)
             dmg = 0
             nar = "Miss!"
         } else {
@@ -366,6 +368,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
             dmg = Math.round(dmg)
             nar = `Critical hit! ${dmg} dmg`
         } else if (hitChance < 40) {
+            setIsMiss(true)
             dmg = 0
             nar = "Miss!"
         } else {
@@ -392,6 +395,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
             dmg = Math.round(dmg)
             nar = `Critical hit! ${dmg} dmg`
         } else if (hitChance < 5) {
+            setIsMiss(true)
             dmg = 0
             nar = "Miss!"
         } else {
@@ -399,8 +403,6 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
             dmg = Math.round(dmg)
             nar = `Precision hit ${dmg} dmg`
         }
-
-        dmg = dmg * 100
 
         setIsAttackDisabled(true)
         setIsPlayerTurn(false)
@@ -421,6 +423,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
             dmg = Math.round(dmg)
             nar = `Critical hit! ${dmg} dmg`
         } else if (hitChance < 5) {
+            setIsMiss(true)
             dmg = 0
             nar = "Miss!"
         } else {
@@ -474,15 +477,26 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
         document.querySelector(".hp-left").style.width = `${greenPercent}%`
         document.querySelector(".hp-damage").style.width = `${redPercent}%`
 
-
-        setMendCd(4)
-        setIsMendDisabled(true)
-        setPlayerCurHp(updatedPlayerCurHp)
-        setIsAttackDisabled(true)
-        setIsPlayerTurn(false)
-        setNar(nar)
-        updateCombatLog(choosenPokemon.name, nar)
         setEnemyDmg(dmg)
+        setEnemyFloatText("")
+        
+        setIsFloatDmg(false)
+        setPlayerFloatText(updatedPlayerCurHp - playerCurHp)
+        setIsPlayerFloatText(true)
+        setTimeout(() => {
+            setIsPlayerFloatText(false)
+        }, 2000)
+
+
+        setTimeout(() => {
+            setMendCd(4)
+            setIsMendDisabled(true)
+            setPlayerCurHp(updatedPlayerCurHp)
+            setIsAttackDisabled(true)
+            setIsPlayerTurn(false)
+            setNar(nar)
+            updateCombatLog(choosenPokemon.name, nar)
+        }, 2000)
     }
 
     const handleHpPotion = () => {
