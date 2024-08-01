@@ -179,7 +179,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
                 updatedBoostDuration = boostDuration - 1
             }
 
-            enemyCalculatedDmg = applyDmgModifier(enemyCalculatedDmg, enemy.type, choosenPokemon.dmgRel)
+         //   enemyCalculatedDmg = applyDmgModifier(enemyCalculatedDmg, enemy.type, choosenPokemon.dmgRel)
 
             const updatedCurHp = enemyCurHp - enemyCalculatedDmg
 
@@ -226,6 +226,8 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
                 dmg = ((((2 / 5 + 2) * attack * 60 / defense) / 50) + 2) * Z / 255
                 dmg = dmg * 2
                 dmg = Math.round(dmg)
+                dmg = applyDmgModifier(dmg, choosenPokemon.type, enemy.dmgRel)
+
                 nar = `Critical hit! ${dmg} dmg`
             } else if (hitChance < 20) {
                 dmg = 0
@@ -233,6 +235,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
             } else {
                 dmg = ((((2 / 5 + 2) * attack * 60 / defense) / 50) + 2) * Z / 255
                 dmg = Math.round(dmg)
+                dmg = applyDmgModifier(dmg, choosenPokemon.type, enemy.dmgRel)
                 nar = `Normal hit ${dmg} dmg`
             }
 
@@ -299,7 +302,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
 
             let curPlayerDmg = playerDmg
 
-            curPlayerDmg = applyDmgModifier(curPlayerDmg, choosenPokemon.type, enemy.dmgRel)
+         //   curPlayerDmg = applyDmgModifier(curPlayerDmg, choosenPokemon.type, enemy.dmgRel)
 
             const updatedCurHp = playerCurHp - curPlayerDmg
 
@@ -338,6 +341,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
             dmg = ((((2 / 5 + 2) * attack * 60 / enemy.defense) / 50) + 2) * Z / 255
             dmg = dmg * 2
             dmg = Math.round(dmg)
+            dmg = applyDmgModifier(dmg, enemy.type, choosenPokemon.dmgRel)
             nar = `Critical hit! ${dmg} dmg`
         } else if (hitChance < 20) {
             setIsMiss(true)
@@ -346,8 +350,11 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
         } else {
             dmg = ((((2 / 5 + 2) * attack * 60 / enemy.defense) / 50) + 2) * Z / 255
             dmg = Math.round(dmg)
+            dmg = applyDmgModifier(dmg, enemy.type, choosenPokemon.dmgRel)
             nar = `Normal hit ${dmg} dmg`
         }
+
+        dmg = applyDmgModifier(dmg, enemy.type, choosenPokemon.dmgRel)
 
         setIsAttackDisabled(true)
         setIsPlayerTurn(false)
@@ -366,6 +373,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
             dmg = ((((2 / 5 + 2) * attack * 60 / enemy.defense) / 50) + 2) * Z / 255
             dmg = dmg * 2
             dmg = Math.round(dmg)
+            dmg = applyDmgModifier(dmg, enemy.type, choosenPokemon.dmgRel)
             nar = `Critical hit! ${dmg} dmg`
         } else if (hitChance < 40) {
             setIsMiss(true)
@@ -374,8 +382,12 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
         } else {
             dmg = ((((2 / 5 + 2) * attack * 60 / enemy.defense) / 50) + 2) * Z / 255
             dmg = Math.round(dmg)
+            dmg = applyDmgModifier(dmg, enemy.type, choosenPokemon.dmgRel)
             nar = `Heavy hit ${dmg} dmg`
         }
+
+        
+
         setIsAttackDisabled(true)
         setIsPlayerTurn(false)
         setNar(nar)
@@ -393,6 +405,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
             dmg = ((((2 / 5 + 2) * attack * 60 / enemy.defense) / 50) + 2) * Z / 255
             dmg = dmg * 2
             dmg = Math.round(dmg)
+            dmg = applyDmgModifier(dmg, enemy.type, choosenPokemon.dmgRel)
             nar = `Critical hit! ${dmg} dmg`
         } else if (hitChance < 5) {
             setIsMiss(true)
@@ -401,6 +414,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
         } else {
             dmg = ((((2 / 5 + 2) * attack * 60 / enemy.defense) / 50) + 2) * Z / 255
             dmg = Math.round(dmg)
+            dmg = applyDmgModifier(dmg, enemy.type, choosenPokemon.dmgRel)
             nar = `Precision hit ${dmg} dmg`
         }
 
@@ -421,6 +435,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
             dmg = ((((2 / 5 + 2) * special * 60 / enemy.defense) / 50) + 2) * Z / 255
             dmg = dmg * 2
             dmg = Math.round(dmg)
+            dmg = applyDmgModifier(dmg, enemy.type, choosenPokemon.dmgRel)
             nar = `Critical hit! ${dmg} dmg`
         } else if (hitChance < 5) {
             setIsMiss(true)
@@ -429,6 +444,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
         } else {
             dmg = ((((2 / 5 + 2) * special * 60 / enemy.defense) / 50) + 2) * Z / 255
             dmg = Math.round(dmg)
+            dmg = applyDmgModifier(dmg, enemy.type, choosenPokemon.dmgRel)
             nar = `Special hit ${dmg} dmg`
         }
 
@@ -479,7 +495,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
 
         setEnemyDmg(dmg)
         setEnemyFloatText("")
-        
+
         setIsFloatDmg(false)
         setPlayerFloatText(updatedPlayerCurHp - playerCurHp)
         setIsPlayerFloatText(true)
