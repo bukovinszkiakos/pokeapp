@@ -30,8 +30,8 @@ function Pokedexmodal({ setIsPokedexModalOpen, playerPokemons }) {
       <div className='pokedex-title'>{playerPokemons[shownIndex].name}</div>
       <img src={playerPokemons[shownIndex].picFront} className={`${playerPokemons[shownIndex].dead ? "dead" : null} pokedex-img`} />
       <button onClick={() => setIsPokedexModalOpen(false)} type='button' className='close-ability-modal'>Close</button>
-      <button onClick={showNextPokemon} type='button' className='pokedex-prev'>Prev</button>
-      <button onClick={showPrevPokemon} type='button' className='pokedex-next'>Next</button>
+      <button onClick={showPrevPokemon} type='button' className='pokedex-prev'>Prev</button>
+      <button onClick={showNextPokemon} type='button' className='pokedex-next'>Next</button>
 
       <div className='pokedex-info'>
         <div className='symbol-row'>

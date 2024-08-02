@@ -10,7 +10,7 @@ function Abilitymodal({ choosenPokemon, setIsAbilityModalOpen }) {
     const precisionDetails = `🗡️: ${atk} 🏹: 95% 💥:5% ⏳:0 `
     const specialDetails = `🗡️: ${spc} 🏹: 95% 💥:20% ⏳:2 `
     const defendDetails = `🗡️:0 🏹: 100% 💥:0% 🛡️:x3 ⏳:0 🕒:3`
-    const mendDetails = `🗡️:0 🏹: 100% 💥:0% ❤️:15 ⏳:3 `
+    const mendDetails = `🗡️:0 🏹: 100% 💥:0% ❤️:15 ⏳:4 `
     const hpPotDetails = `🗡️:0 🏹: 100% 💥:0% ❤️:30% ⏳:0 `
     const boostPotDetails = `🗡️:0 🏹: 100% 💥:0% ⚔️:x1.5 ⏳:0 🕒:3 `
 
